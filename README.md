@@ -12,7 +12,7 @@
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/W7W2LF8UA)
 
 ## Module to notify about hands management
-Hold items more then with 2 hands
+Hold items more than with 2 hands
 ![hold](./hold.png)
 
 ## Patch Notes
