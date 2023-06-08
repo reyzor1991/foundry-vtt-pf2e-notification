@@ -1,4 +1,4 @@
-# PF2e Notification
+# PF2e Hands Management (Reminder)
 [![Minimum Foundry 10]][Foundry URL]
 [![Verified Foundry 10]][Foundry URL]
 
