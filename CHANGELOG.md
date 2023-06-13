@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.0.4
+
+### New feature
+-   Update to foundry v11
+
 ## Version 0.0.3
 
 ### Bug fixes

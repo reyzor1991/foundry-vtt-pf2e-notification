@@ -1,6 +1,6 @@
 # PF2e Hands Management (Reminder)
-[![Minimum Foundry 10]][Foundry URL]
-[![Verified Foundry 10]][Foundry URL]
+![](https://img.shields.io/endpoint?url=https%3A%2F%2Ffoundryshields.com%2Fversion%3Fstyle%3Dflat%26url%3Dhttps://raw.githubusercontent.com/reyzor1991/foundry-vtt-pf2e-notification/master/module.json)
+![](https://img.shields.io/endpoint?url=https%3A%2F%2Ffoundryshields.com%2Fsystem%3FnameType%3Dfull%26showVersion%3D1%26style%3Dflat%26url%3Dhttps://raw.githubusercontent.com/reyzor1991/foundry-vtt-pf2e-notification/master/module.json)
 
 [![Version]][Version URL]
 
@@ -33,11 +33,7 @@ Open Game License:
 
 * See [OpenGameLicense.md](OpenGameLicense.md)
 
-[Foundry URL]: https://foundryvtt.com
-[Minimum Foundry 10]: https://img.shields.io/badge/Minimum%20Foundry-10.291-informational?style=flat-square
-[Verified Foundry 10]: https://img.shields.io/badge/Verified%20Foundry-10.291-informational?style=flat-square
-
-[Version]: https://img.shields.io/badge/Version-0.0.3-yellow?style=flat-square
+[Version]: https://img.shields.io/badge/Version-0.0.4-yellow?style=flat-square
 [Version URL]: https://github.com/reyzor1991/foundry-vtt-pf2e-notification
 
 [GitHub Release Date]: https://img.shields.io/github/release-date/reyzor1991/foundry-vtt-pf2e-notification
