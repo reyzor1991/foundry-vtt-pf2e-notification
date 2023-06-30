@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.0.5
+
+### Bug fixes
+-   Fix issue with handling basic unarmed
+
 ## Version 0.0.4
 
 ### New feature
