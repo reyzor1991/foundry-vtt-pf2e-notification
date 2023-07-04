@@ -69,7 +69,7 @@ Hooks.on('updateItem', async (item, system, diff, _id) => {
 
 Hooks.on('preCreateChatMessage',(message, user, _options, userId)=>{
     if (game?.combats?.active && message?.actor?.type == "character") {
-        if ('attack-roll' == message?.flags?.pf2e?.context?.type) {
+        if ('attack-roll' == message?.flags?.pf2e?.context?.type && message.item) {
             if (!message.item.isHeld && message.item.slug != "basic-unarmed") {
                 ui.notifications.info(`${message?.item?.actor?.name} attacks with a weapon that is not held.`);
             } else if (parseInt(message.item.handsHeld) < parseInt(message.item.hands)) {
