@@ -54,7 +54,7 @@ Hooks.once("init", () => {
 
 Hooks.on('updateItem', async (item, system, diff, _id) => {
     if (game?.combats?.active) {
-        if (game.user.isGM || (token && token?.combatant?.players?.find(a=>a.id==game.user.id))) {
+        if (game.user.isGM || (typeof token !== undefined && token?.combatant?.players?.find(a=>a.id==game.user.id))) {
             if (system?.system?.equipped?.handsHeld >= 0) {
                 var bb = heldItems(item?.actor);
                 var a = bb.map(a=>a.handsHeld).reduce((a, b) => a + b, 0)
