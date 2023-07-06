@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.0.7
+
+### Bug fixes
+-   Fix issue with token checking 
+
 ## Version 0.0.5
 
 ### Bug fixes
