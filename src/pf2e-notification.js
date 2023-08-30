@@ -1,6 +1,7 @@
 import Settings from "./settings.js";
 
 function heldItems(actor) {
+    if (!actor) return []
     return Object.values(actor?.itemTypes).flat(1).filter(a=>a.handsHeld > 0);
 }
 
