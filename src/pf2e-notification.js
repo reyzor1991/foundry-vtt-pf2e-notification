@@ -54,8 +54,8 @@ Hooks.once("init", () => {
 });
 
 Hooks.on('updateItem', async (item, system, diff, _id) => {
-    if (game?.combats?.active) {
-        if (game.user.isGM || (typeof _token !== 'undefined' && _token?.combatant?.players?.find(a=>a.id==game.user.id))) {
+    if (game?.combats?.active || game.settings.get("pf2e-notification", "ignoreEncounterCheck")) {
+        if (game.user.isGM || item?.actor?.isOwner) {
             if (system?.system?.equipped?.handsHeld >= 0) {
                 var bb = heldItems(item?.actor);
                 var a = bb.map(a=>a.handsHeld).reduce((a, b) => a + b, 0)
@@ -69,7 +69,7 @@ Hooks.on('updateItem', async (item, system, diff, _id) => {
 });
 
 Hooks.on('preCreateChatMessage',(message, user, _options, userId)=>{
-    if (game?.combats?.active && message?.actor?.type == "character") {
+    if ((game?.combats?.active || game.settings.get("pf2e-notification", "ignoreEncounterCheck")) && message?.actor?.type == "character") {
         if ('attack-roll' == message?.flags?.pf2e?.context?.type && message.item) {
             if (!message.item.isHeld && message.item.slug != "basic-unarmed") {
                 ui.notifications.info(`${message?.item?.actor?.name} attacks with a weapon that is not held.`);

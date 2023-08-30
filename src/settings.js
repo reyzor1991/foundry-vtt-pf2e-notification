@@ -10,6 +10,13 @@ export default class Settings {
             default: false,
             type: Boolean,
         });
+        game.settings.register("pf2e-notification", "ignoreEncounterCheck", {
+            name: "Ignore encounter check.",
+            scope: "world",
+            config: true,
+            default: false,
+            type: Boolean,
+        });
     }
 
 }
