@@ -10,7 +10,11 @@ function hasFreeHand(actor) {
 }
 
 function hasCondition(actor, con) {
-    return actor && actor?.itemTypes?.condition?.find((c => c.type == "condition" && con === c.slug))
+    return actor && actor?.itemTypes?.condition?.find((c => con === c.slug))
+}
+
+function hasEffectBySourceId(actor, eff) {
+    return actor?.itemTypes?.effect?.find(c => eff === c.sourceId)
 }
 
 function isCleric(actor) {
@@ -70,7 +74,7 @@ Hooks.on('updateItem', async (item, system, diff, _id) => {
 
 Hooks.on('preCreateChatMessage',(message, user, _options, userId)=>{
     if ((game?.combats?.active || game.settings.get("pf2e-notification", "ignoreEncounterCheck")) && message?.actor?.type == "character") {
-        if ('attack-roll' == message?.flags?.pf2e?.context?.type && message.item) {
+        if ('attack-roll' == message?.flags?.pf2e?.context?.type && message.item && message.item?.type === 'weapon') {
             if (!message.item.isHeld && message.item.slug != "basic-unarmed") {
                 ui.notifications.info(`${message?.item?.actor?.name} attacks with a weapon that is not held.`);
             } else if (parseInt(message.item.handsHeld) < parseInt(message.item.hands)) {
@@ -102,6 +106,12 @@ Hooks.on('preCreateChatMessage',(message, user, _options, userId)=>{
                         }
                     }
                 }
+            }
+        }
+
+        if (hasEffectBySourceId(message?.actor, "Compendium.pf2e.feat-effects.Item.z3uyCMBddrPK5umr")) {
+            if (message.item && message.item.slug != 'seek' && message.item.traits.has('concentrate') && !message.item.traits.has('rage')) {
+                ui.notifications.info(`${message.actor?.name} might not be able to do this action because under rage effect.`);
             }
         }
     }

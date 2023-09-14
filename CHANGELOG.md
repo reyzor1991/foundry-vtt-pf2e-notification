@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.0.11
+
+### New feature
+-   Add reminder Rage Action with Concentrate trait 
+
 ## Version 0.0.7
 
 ### Bug fixes
