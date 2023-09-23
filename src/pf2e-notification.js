@@ -61,16 +61,20 @@ Hooks.on('updateItem', async (item, system, diff, _id) => {
     if (game?.combats?.active || game.settings.get("pf2e-notification", "ignoreEncounterCheck")) {
         if (game.user.isGM || item?.actor?.isOwner) {
             if (system?.system?.equipped?.handsHeld >= 0) {
-                var bb = heldItems(item?.actor);
-                var a = bb.map(a=>a.handsHeld).reduce((a, b) => a + b, 0)
-                if (a > 2) {
-                    var desc = ' '+bb.map(a=>`${a.name} - ${a.handsHeld} hand` + (a.handsHeld == 1 ? '' : 's')).join(', ')
-                    ui.notifications.info(`${item?.actor?.name} uses more then 2 hands.` + desc);
-                }
+                checkHands(item?.actor);
             }
         }
     }
 });
+
+function checkHands(actor) {
+    const bb = heldItems(actor);
+    const a = bb.map(a=>a.handsHeld).reduce((a, b) => a + b, 0)
+    if (a > 2) {
+        const desc = ' '+bb.map(a=>`${a.name} - ${a.handsHeld} hand` + (a.handsHeld == 1 ? '' : 's')).join(', ')
+        ui.notifications.info(`${actor?.name} uses more then 2 hands.` + desc);
+    }
+}
 
 Hooks.on('preCreateChatMessage',(message, user, _options, userId)=>{
     if ((game?.combats?.active || game.settings.get("pf2e-notification", "ignoreEncounterCheck")) && message?.actor?.type == "character") {
@@ -116,3 +120,9 @@ Hooks.on('preCreateChatMessage',(message, user, _options, userId)=>{
         }
     }
 });
+
+Hooks.on('pf2e.startTurn', (combatant, encounter, id) => {
+    if (game.settings.get("pf2e-notification", "ignoreEncounterCheck")) {
+        checkHands(combatant.actor)
+    }
+})

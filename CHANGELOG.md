@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.0.12
+
+### New feature
+-   Add check on start of turn
+
 ## Version 0.0.11
 
 ### New feature
