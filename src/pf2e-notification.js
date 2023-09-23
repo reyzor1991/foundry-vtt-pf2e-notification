@@ -6,7 +6,7 @@ function heldItems(actor) {
 }
 
 function hasFreeHand(actor) {
-    return heldItems(actor).map(a=>a.handsHeld).reduce((a, b) => a + b, 0) < 2;
+    return heldItems(actor).filter(a=> !(a.slug === 'buckler' && a.handsHeld === 1) ).map(a=>a.handsHeld).reduce((a, b) => a + b, 0) < 2;
 }
 
 function hasCondition(actor, con) {
@@ -18,27 +18,27 @@ function hasEffectBySourceId(actor, eff) {
 }
 
 function isCleric(actor) {
-    return actor?.class?.slug == "cleric";
+    return actor?.class?.slug === "cleric";
 }
 
 function isBard(actor) {
-    return actor?.class?.slug == "bard";
+    return actor?.class?.slug === "bard";
 }
 
 function isDruid(actor) {
-    return actor?.class?.slug == "druid";
+    return actor?.class?.slug === "druid";
 }
 
 function isOracle(actor) {
-    return actor?.class?.slug == "oracle";
+    return actor?.class?.slug === "oracle";
 }
 
 function isPsychic(actor) {
-    return actor?.class?.slug == "psychic";
+    return actor?.class?.slug === "psychic";
 }
 
 function isSummoner(actor) {
-    return actor?.class?.slug == "summoner";
+    return actor?.class?.slug === "summoner";
 }
 
 function heldSymbol(actor) {
@@ -68,17 +68,17 @@ Hooks.on('updateItem', async (item, system, diff, _id) => {
 });
 
 function checkHands(actor) {
-    const bb = heldItems(actor);
+    const bb = heldItems(actor).filter(a=> !(a.slug === 'buckler' && a.handsHeld === 1) );
     const a = bb.map(a=>a.handsHeld).reduce((a, b) => a + b, 0)
     if (a > 2) {
-        const desc = ' '+bb.map(a=>`${a.name} - ${a.handsHeld} hand` + (a.handsHeld == 1 ? '' : 's')).join(', ')
+        const desc = ' '+bb.map(a=>`${a.name} - ${a.handsHeld} hand` + (a.handsHeld === 1 ? '' : 's')).join(', ')
         ui.notifications.info(`${actor?.name} uses more then 2 hands.` + desc);
     }
 }
 
 Hooks.on('preCreateChatMessage',(message, user, _options, userId)=>{
-    if ((game?.combats?.active || game.settings.get("pf2e-notification", "ignoreEncounterCheck")) && message?.actor?.type == "character") {
-        if ('attack-roll' == message?.flags?.pf2e?.context?.type && message.item && message.item?.type === 'weapon') {
+    if ((game?.combats?.active || game.settings.get("pf2e-notification", "ignoreEncounterCheck")) && message?.actor?.type === "character") {
+        if ('attack-roll' === message?.flags?.pf2e?.context?.type && message.item && message.item?.type === 'weapon') {
             if (!message.item.isHeld && message.item.slug != "basic-unarmed") {
                 ui.notifications.info(`${message?.item?.actor?.name} attacks with a weapon that is not held.`);
             } else if (parseInt(message.item.handsHeld) < parseInt(message.item.hands)) {
@@ -86,7 +86,7 @@ Hooks.on('preCreateChatMessage',(message, user, _options, userId)=>{
             }
         }
         if (Settings.handleSpell) {
-            if (message?.flags?.pf2e?.casting || "spell-cast" == message?.flags?.pf2e?.context?.type) {
+            if (message?.flags?.pf2e?.casting || "spell-cast" === message?.flags?.pf2e?.context?.type) {
                 if (message?.item?.castingTraits?.includes("manipulate")) {
                     if (hasCondition(message?.actor, 'restrained')) {
                         ui.notifications.info(`${message?.actor?.name} can not casts spell ${message?.item?.name} when restrained.`);
@@ -125,4 +125,17 @@ Hooks.on('pf2e.startTurn', (combatant, encounter, id) => {
     if (game.settings.get("pf2e-notification", "ignoreEncounterCheck")) {
         checkHands(combatant.actor)
     }
-})
+});
+
+Hooks.on('preCreateItem', (item, data, id) => {
+    if ("effect-raise-a-shield" != item.slug) {return}
+    if ("character" != item?.actor?.type) {return}
+    const holdItems = heldItems(item.actor);
+    if (holdItems.find(a=>a.slug === 'buckler')) {
+        if ( !(holdItems.filter(a=>a.slug != 'buckler').map(a=>a.handsHeld).reduce((a, b) => a + b, 0) < 2) ) {
+            if (!holdItems.filter(a=>a.slug != 'buckler').find(a=>a.bulk.light === 1 && a.bulk.normal === 0)) {
+                ui.notifications.info(`${item.actor?.name} not be able to Raise a Shield. Need free hand or hold light item in hand.`);
+            }
+        }
+    }
+});
