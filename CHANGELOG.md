@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.0.14
+-   Handle Attached to Shield trait
+
 ## Version 0.0.13
 
 ### New feature

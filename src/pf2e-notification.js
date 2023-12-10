@@ -2,11 +2,18 @@ import Settings from "./settings.js";
 
 function heldItems(actor) {
     if (!actor) return []
+    return heldAllItems(actor)
+        .filter(a=> !(a.slug === 'buckler' && a.handsHeld === 1) )
+        .filter(a=> !(a.type === 'weapon' && a.traits.has('attached-to-shield')) );
+}
+
+function heldAllItems(actor) {
+    if (!actor) return []
     return Object.values(actor?.itemTypes).flat(1).filter(a=>a.handsHeld > 0);
 }
 
 function hasFreeHand(actor) {
-    return heldItems(actor).filter(a=> !(a.slug === 'buckler' && a.handsHeld === 1) ).map(a=>a.handsHeld).reduce((a, b) => a + b, 0) < 2;
+    return heldItems(actor).map(a=>a.handsHeld).reduce((a, b) => a + b, 0) < 2;
 }
 
 function hasCondition(actor, con) {
@@ -68,7 +75,7 @@ Hooks.on('updateItem', async (item, system, diff, _id) => {
 });
 
 function checkHands(actor) {
-    const bb = heldItems(actor).filter(a=> !(a.slug === 'buckler' && a.handsHeld === 1) );
+    const bb = heldItems(actor);
     const a = bb.map(a=>a.handsHeld).reduce((a, b) => a + b, 0)
     if (a > 2) {
         const desc = ' '+bb.map(a=>`${a.name} - ${a.handsHeld} hand` + (a.handsHeld === 1 ? '' : 's')).join(', ')
@@ -130,7 +137,7 @@ Hooks.on('pf2e.startTurn', (combatant, encounter, id) => {
 Hooks.on('preCreateItem', (item, data, id) => {
     if ("effect-raise-a-shield" != item.slug) {return}
     if ("character" != item?.actor?.type) {return}
-    const holdItems = heldItems(item.actor);
+    const holdItems = heldAllItems(item.actor);
     if (holdItems.find(a=>a.slug === 'buckler')) {
         if ( !(holdItems.filter(a=>a.slug != 'buckler').map(a=>a.handsHeld).reduce((a, b) => a + b, 0) < 2) ) {
             if (!holdItems.filter(a=>a.slug != 'buckler').find(a=>a.bulk.light === 1 && a.bulk.normal === 0)) {
