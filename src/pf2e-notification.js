@@ -1,19 +1,24 @@
 import Settings from "./settings.js";
 
+function hasOption(message, opt) {
+    return message?.flags?.pf2e?.context?.options?.includes(opt)
+        || message?.flags?.pf2e?.origin?.rollOptions?.includes(opt);
+}
+
 function heldItems(actor) {
     if (!actor) return []
     return heldAllItems(actor)
-        .filter(a=> !(a.slug === 'buckler' && a.handsHeld === 1) )
-        .filter(a=> !(a.type === 'weapon' && a.traits.has('attached-to-shield')) );
+        .filter(a => !(a.slug === 'buckler' && a.handsHeld === 1))
+        .filter(a => !(a.type === 'weapon' && a.traits.has('attached-to-shield')));
 }
 
 function heldAllItems(actor) {
     if (!actor) return []
-    return Object.values(actor?.itemTypes).flat(1).filter(a=>a.handsHeld > 0);
+    return Object.values(actor?.itemTypes).flat(1).filter(a => a.handsHeld > 0);
 }
 
 function hasFreeHand(actor) {
-    return heldItems(actor).map(a=>a.handsHeld).reduce((a, b) => a + b, 0) < 2;
+    return heldItems(actor).map(a => a.handsHeld).reduce((a, b) => a + b, 0) < 2;
 }
 
 function hasCondition(actor, con) {
@@ -49,15 +54,15 @@ function isSummoner(actor) {
 }
 
 function heldSymbol(actor) {
-    return heldItems(actor).filter(a=>a.slug.startsWith("religious-symbol")).length > 0;
+    return heldItems(actor).filter(a => a.slug.startsWith("religious-symbol")).length > 0;
 }
 
 function heldMusicalInstrument(actor) {
-    return heldItems(actor).filter(a=>a.slug.startsWith("musical-instrument") || a.slug.startsWith("maestros-instrument")).length > 0;
+    return heldItems(actor).filter(a => a.slug.startsWith("musical-instrument") || a.slug.startsWith("maestros-instrument")).length > 0;
 }
 
 function heldMistletoe(actor) {
-    return heldItems(actor).filter(a=>a.slug.includes("mistletoe")).length > 0;
+    return heldItems(actor).filter(a => a.slug.includes("mistletoe")).length > 0;
 }
 
 Hooks.once("init", () => {
@@ -76,17 +81,17 @@ Hooks.on('updateItem', async (item, system, diff, _id) => {
 
 function checkHands(actor) {
     const bb = heldItems(actor);
-    const a = bb.map(a=>a.handsHeld).reduce((a, b) => a + b, 0)
+    const a = bb.map(a => a.handsHeld).reduce((a, b) => a + b, 0)
     if (a > 2) {
-        const desc = ' '+bb.map(a=>`${a.name} - ${a.handsHeld} hand` + (a.handsHeld === 1 ? '' : 's')).join(', ')
+        const desc = ' ' + bb.map(a => `${a.name} - ${a.handsHeld} hand` + (a.handsHeld === 1 ? '' : 's')).join(', ')
         ui.notifications.info(`${actor?.name} uses more then 2 hands.` + desc);
     }
 }
 
-Hooks.on('preCreateChatMessage',(message, user, _options, userId)=>{
+Hooks.on('preCreateChatMessage', (message, user, _options) => {
     if ((game?.combats?.active || game.settings.get("pf2e-notification", "ignoreEncounterCheck")) && message?.actor?.type === "character") {
         if ('attack-roll' === message?.flags?.pf2e?.context?.type && message.item && message.item?.type === 'weapon') {
-            if (!message.item.isHeld && message.item.slug != "basic-unarmed") {
+            if (!message.item.isHeld && message.item.slug !== "basic-unarmed") {
                 ui.notifications.info(`${message?.item?.actor?.name} attacks with a weapon that is not held.`);
             } else if (parseInt(message.item.handsHeld) < parseInt(message.item.hands)) {
                 ui.notifications.info(`${message?.item?.actor?.name} attacks with a weapon that held incorrectly.`);
@@ -121,26 +126,36 @@ Hooks.on('preCreateChatMessage',(message, user, _options, userId)=>{
         }
 
         if (hasEffectBySourceId(message?.actor, "Compendium.pf2e.feat-effects.Item.z3uyCMBddrPK5umr")) {
-            if (message.item && message.item.slug != 'seek' && message.item.traits.has('concentrate') && !message.item.traits.has('rage')) {
+            if (message.item && message.item.slug !== 'seek' && message.item.traits.has('concentrate') && !message.item.traits.has('rage')) {
                 ui.notifications.info(`${message.actor?.name} might not be able to do this action because under rage effect.`);
+            }
+        }
+
+        if (hasOption(message, 'item:trait:impulse') || hasOption(message, 'origin:item:trait:impulse')) {
+            if (!hasFreeHand(message?.actor)) {
+                ui.notifications.info(`${message?.actor?.name} can not use ${message?.item?.name} because need free hand for it.`);
             }
         }
     }
 });
 
-Hooks.on('pf2e.startTurn', (combatant, encounter, id) => {
+Hooks.on('pf2e.startTurn', (combatant) => {
     if (game.settings.get("pf2e-notification", "ignoreEncounterCheck")) {
         checkHands(combatant.actor)
     }
 });
 
-Hooks.on('preCreateItem', (item, data, id) => {
-    if ("effect-raise-a-shield" != item.slug) {return}
-    if ("character" != item?.actor?.type) {return}
+Hooks.on('preCreateItem', (item) => {
+    if ("effect-raise-a-shield" !== item.slug) {
+        return
+    }
+    if ("character" !== item?.actor?.type) {
+        return
+    }
     const holdItems = heldAllItems(item.actor);
-    if (holdItems.find(a=>a.slug === 'buckler')) {
-        if ( !(holdItems.filter(a=>a.slug != 'buckler').map(a=>a.handsHeld).reduce((a, b) => a + b, 0) < 2) ) {
-            if (!holdItems.filter(a=>a.slug != 'buckler').find(a=>a.bulk.light === 1 && a.bulk.normal === 0)) {
+    if (holdItems.find(a => a.slug === 'buckler')) {
+        if (!(holdItems.filter(a => a.slug !== 'buckler').map(a => a.handsHeld).reduce((a, b) => a + b, 0) < 2)) {
+            if (!holdItems.filter(a => a.slug !== 'buckler').find(a => a.bulk.light === 1 && a.bulk.normal === 0)) {
                 ui.notifications.info(`${item.actor?.name} not be able to Raise a Shield. Need free hand or hold light item in hand.`);
             }
         }
