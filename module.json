@@ -2,7 +2,7 @@
   "id": "pf2e-notification",
   "title": "PF2e Hands Management (Reminder)",
   "description": "PF2e Hands Management (Reminder)",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "authors": [
     {
       "name": "reyzor1991",
@@ -26,7 +26,7 @@
   "changelog": "https://github.com/reyzor1991/foundry-vtt-pf2e-notification/blob/main/CHANGELOG.md",
   "compatibility": {
     "minimum": "10",
-    "verified": "12"
+    "verified": "13.342"
   },
   "relationships": {
     "systems": [
@@ -36,7 +36,7 @@
         "manifest": "https://github.com/foundryvtt/pf2e/releases/download/latest/system.json",
         "compatibility": {
           "minimum": "4.12.6",
-          "verified": "6.0.1"
+          "verified": "7.0.5"
         }
       }
     ]

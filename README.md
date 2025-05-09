@@ -34,5 +34,5 @@ Open Game License:
 
 * See [OpenGameLicense.md](OpenGameLicense.md)
 
-[Version]: https://img.shields.io/badge/Version-0.1.0-yellow?style=flat-square
+[Version]: https://img.shields.io/badge/Version-0.2.0-yellow?style=flat-square
 [Version URL]: https://github.com/reyzor1991/foundry-vtt-pf2e-notification
