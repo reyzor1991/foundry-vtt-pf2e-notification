@@ -99,7 +99,7 @@ Hooks.on('preCreateChatMessage', (message, user, _options) => {
         }
         if (Settings.handleSpell) {
             if (message?.flags?.pf2e?.casting || "spell-cast" === message?.flags?.pf2e?.context?.type) {
-                if (message?.item?.castingTraits?.includes("manipulate")) {
+                if (message?.item?.system?.traits?.value?.includes("manipulate")) {
                     if (hasCondition(message?.actor, 'restrained')) {
                         ui.notifications.info(`${message?.actor?.name} can not casts spell ${message?.item?.name} when restrained.`);
                     }
